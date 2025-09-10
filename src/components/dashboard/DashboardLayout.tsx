@@ -17,23 +17,28 @@ export const DashboardLayout = () => {
 
   // Single source of truth for mobile detection
   const [isMobile, setIsMobile] = useState(() => {
-    return typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false;
-  });
-  
-  // Separate states for mobile and desktop
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(() => {
-    // Initialize from Redux state, but only for desktop
-    return typeof window !== 'undefined' && window.innerWidth >= MOBILE_BREAKPOINT 
-      ? (isCollapsed || false) 
+    return typeof window !== "undefined"
+      ? window.innerWidth < MOBILE_BREAKPOINT
       : false;
   });
+
+  // Separate states for mobile and desktop
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(
+    () => {
+      // Initialize from Redux state, but only for desktop
+      return typeof window !== "undefined" &&
+        window.innerWidth >= MOBILE_BREAKPOINT
+        ? isCollapsed || false
+        : false;
+    }
+  );
 
   // Handle responsive behavior with debounce
   const handleResize = useCallback(() => {
     const mobile = window.innerWidth < MOBILE_BREAKPOINT;
     setIsMobile(mobile);
-    
+
     if (mobile) {
       // On mobile, always close the sidebar when resizing to mobile
       setIsMobileSidebarOpen(false);
@@ -41,8 +46,8 @@ export const DashboardLayout = () => {
   }, []);
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    
+    let timeoutId: ReturnType<typeof setTimeout>;
+
     const debouncedResize = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(handleResize, 150);
@@ -63,17 +68,20 @@ export const DashboardLayout = () => {
   }, [isDesktopSidebarCollapsed, isMobile, dispatch]);
 
   // Handle mobile sidebar toggle
-  const handleMobileToggle = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isMobile) {
-      setIsMobileSidebarOpen(prev => !prev);
-    }
-  }, [isMobile]);
+  const handleMobileToggle = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (isMobile) {
+        setIsMobileSidebarOpen((prev) => !prev);
+      }
+    },
+    [isMobile]
+  );
 
   // Handle desktop sidebar toggle
   const handleDesktopToggle = useCallback(() => {
     if (!isMobile) {
-      setIsDesktopSidebarCollapsed(prev => !prev);
+      setIsDesktopSidebarCollapsed((prev) => !prev);
     }
   }, [isMobile]);
 
@@ -86,8 +94,8 @@ export const DashboardLayout = () => {
     };
 
     if (isMobileSidebarOpen) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [isMobile, isMobileSidebarOpen]);
 
@@ -97,7 +105,9 @@ export const DashboardLayout = () => {
   return (
     <div
       className={`dashboard-layout ${
-        !isMobile && isDesktopSidebarCollapsed ? "dashboard-layout--sidebar-collapsed" : ""
+        !isMobile && isDesktopSidebarCollapsed
+          ? "dashboard-layout--sidebar-collapsed"
+          : ""
       }`}
       data-mobile={isMobile}
     >
@@ -112,9 +122,13 @@ export const DashboardLayout = () => {
       {/* Sidebar */}
       <div
         className={`dashboard-layout__sidebar ${
-          isMobile && isMobileSidebarOpen ? "dashboard-layout__sidebar--mobile-open" : ""
+          isMobile && isMobileSidebarOpen
+            ? "dashboard-layout__sidebar--mobile-open"
+            : ""
         } ${
-          isMobile ? "dashboard-layout__sidebar--mobile" : "dashboard-layout__sidebar--desktop"
+          isMobile
+            ? "dashboard-layout__sidebar--mobile"
+            : "dashboard-layout__sidebar--desktop"
         }`}
       >
         <Sidebar
@@ -136,7 +150,11 @@ export const DashboardLayout = () => {
               <button
                 className="dashboard-layout__mobile-toggle"
                 onClick={handleMobileToggle}
-                aria-label={isMobileSidebarOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-label={
+                  isMobileSidebarOpen
+                    ? "Close navigation menu"
+                    : "Open navigation menu"
+                }
               >
                 <Menu size={20} />
               </button>
@@ -148,7 +166,9 @@ export const DashboardLayout = () => {
                 className="dashboard-layout__sidebar-toggle"
                 onClick={handleDesktopToggle}
                 aria-label={
-                  isDesktopSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+                  isDesktopSidebarCollapsed
+                    ? "Expand sidebar"
+                    : "Collapse sidebar"
                 }
               >
                 <Menu size={18} />
