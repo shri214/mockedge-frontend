@@ -10,7 +10,7 @@ import {
   Shield,
   AlertTriangle,
 } from "lucide-react";
-import "./createAttempts.scss";
+import "./CreateAttempts.scss"
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector } from "../../redux/hook";
 import type { RootState } from "../../store";
