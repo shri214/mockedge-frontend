@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import  { useState, useEffect, useMemo } from "react";
 import {
   ChevronRight,
   Users,
@@ -42,7 +42,6 @@ export const CreateAttempts = () => {
     attemptId: testId || "",
     limit: 10,
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string>("");
   const [subjectOptions, setSubjectOptions]=useState<string[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -184,7 +183,7 @@ export const CreateAttempts = () => {
     }
 
     return true;
-  }, [selectionType, formData, isAdmin, currentYear]);
+  }, [selectionType, formData, isAdmin, currentYear, selectionTypes]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};

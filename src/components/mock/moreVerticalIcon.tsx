@@ -179,7 +179,6 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
         onClose={() => setShowRescheduleModal(false)}
         onReschedule={handleRescheduleSubmit}
         currentDateTime={params.data.scheduleMock || ""}
-        testId={testId}
       />
     </>
   );

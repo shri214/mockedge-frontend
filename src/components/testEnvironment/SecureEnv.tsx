@@ -69,7 +69,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<ExamStep>("agreement");
   const [isSecureMode, setIsSecureMode] = useState(false);
-  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [violations, setViolations] = useState<SecurityViolation[]>([]);
   const [systemChecks, setSystemChecks] = useState<SystemChecks>({
     camera: false,
@@ -100,7 +99,7 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
         console.log(`Stopped ${track.kind} track`);
       });
       cameraStreamRef.current = null;
-      setCameraStream(null);
+      
     }
 
     // Exit fullscreen
@@ -201,7 +200,6 @@ const SecureExamEnvironment: React.FC<SecureExamEnvironmentProps> = ({
       console.log("Audio tracks:", stream.getAudioTracks().length);
 
       // Store stream in both state and ref
-      setCameraStream(stream);
       cameraStreamRef.current = stream;
 
       // Update system checks immediately after getting stream

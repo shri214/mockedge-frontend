@@ -16,7 +16,7 @@ export const Home: React.FC = () => {
       const res = await getAttemptsByUser(user?.id);
       console.log("res length ", res.data.length);
       console.log("res status ", res.data);
-      res.data.map((val, ind)=>{
+      res.data.map((val:any)=>{
         console.log(val.status)
       })
     };

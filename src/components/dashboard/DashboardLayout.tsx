@@ -81,7 +81,7 @@ export const DashboardLayout = () => {
   // Handle desktop sidebar toggle
   const handleDesktopToggle = useCallback(() => {
     if (!isMobile) {
-      setIsDesktopSidebarCollapsed((prev) => !prev);
+      setIsDesktopSidebarCollapsed((prev:any) => !prev);
     }
   }, [isMobile]);
 

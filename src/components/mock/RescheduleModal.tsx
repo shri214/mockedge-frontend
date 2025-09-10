@@ -10,7 +10,6 @@ interface RescheduleModalProps {
   onClose: () => void;
   onReschedule: (newDateTime: string) => Promise<void>;
   currentDateTime: string;
-  testId: string;
 }
 
 export const RescheduleModal: React.FC<RescheduleModalProps> = ({
@@ -18,7 +17,6 @@ export const RescheduleModal: React.FC<RescheduleModalProps> = ({
   onClose,
   onReschedule,
   currentDateTime,
-  testId
 }) => {
   const [selectedDateTime, setSelectedDateTime] = useState(currentDateTime);
   const [isLoading, setIsLoading] = useState(false);

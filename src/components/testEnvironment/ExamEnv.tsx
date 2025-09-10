@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import  { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SecureExamEnvironment from "./SecureEnv";
 import { Shield, AlertTriangle, Loader } from "lucide-react";

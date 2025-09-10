@@ -20,7 +20,8 @@ export const useAuth = () => {
       localStorage.removeItem("accessToken");
     }
     return payload.exp < currentTime;
-  } catch (error) {
+  } catch (error:any) {
+    console.log(error)
     return true; // If we can't decode, assume expired
   }
 };
@@ -28,7 +29,7 @@ export const useAuth = () => {
   const isTokenValid = useMemo(() => {
     if (!accessToken) return false;
     return !isTokenExpired(accessToken);
-  }, [accessToken]);
+  }, [accessToken, isTokenExpired]);
 
   const getAuthStatus = (): AuthStatus => {
     if (!accessToken || !user || !isTokenValid) {
@@ -51,7 +52,7 @@ export const useAuth = () => {
     return requiredRoles.includes(user.role);
   };
 
-  const hasPermission = (permission: string): boolean => {
+  const hasPermission = (): boolean => {
     // Add your permission logic here
     // This could check against a permissions array in the user object
     return true;

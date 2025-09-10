@@ -10,8 +10,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  AreaChart,
-  Area,
 } from "recharts";
 import "./Analytics.scss";
 import { getAttemptsByUser } from "../../function/getAttemptsByUser";

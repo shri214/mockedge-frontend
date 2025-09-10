@@ -1,5 +1,3 @@
-// StatusCell.tsx
-import React from "react";
 
 interface StatusCellProps {
   value: string;
