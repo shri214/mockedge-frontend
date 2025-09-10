@@ -4,8 +4,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import "./CreateMock.scss";
-
+import "./createMock.scss"
 type DateTimePickerProps = {
   value?: string;
   onChange: (iso: string) => void;
