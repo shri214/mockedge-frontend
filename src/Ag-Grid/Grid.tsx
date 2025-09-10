@@ -8,6 +8,7 @@ ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 interface ApiGridProps {
   data: TestScheduledDTO[];
+  columns: any[]; 
   loading: boolean;
   currentPage: number;
   totalPages: number;
@@ -19,7 +20,7 @@ interface ApiGridProps {
 
 const ApiGrid: React.FC<ApiGridProps> = ({
   data,
-  columnDefs,
+  columns, // This was already being destructured but not defined in props
   loading,
   currentPage,
   totalPages,
@@ -33,7 +34,6 @@ const ApiGrid: React.FC<ApiGridProps> = ({
     []
   );
   const gridStyle = useMemo(() => ({ height: "100%", width: "100%" }), []);
-
 
   const defaultColDef = useMemo(
     () => ({
@@ -119,7 +119,7 @@ const ApiGrid: React.FC<ApiGridProps> = ({
         <div style={gridStyle} className="ag-theme-alpine">
           <AgGridReact
             rowData={data}
-            columnDefs={columnDefs}
+            columnDefs={columns}
             defaultColDef={defaultColDef}
             suppressPaginationPanel={true} // We'll use custom pagination
             animateRows={true}

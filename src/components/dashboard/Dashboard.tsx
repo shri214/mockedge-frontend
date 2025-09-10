@@ -29,6 +29,14 @@ interface DashboardFilters {
   dateRange: "all" | "today" | "week" | "month";
 }
 
+// Define proper types for AG Grid parameters
+interface ValueFormatterParams {
+  value: any;
+  data: any;
+  node: any;
+  colDef: any;
+}
+
 export const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state?.user?.user?.id);
@@ -36,9 +44,7 @@ export const Dashboard: React.FC = () => {
     data,
     loading,
     error,
-    currentPage,
     totalPages,
-    pageSize,
     totalElements,
   } = useAppSelector((state) => state.testSchedule);
 
@@ -57,7 +63,7 @@ export const Dashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Column definitions for TestScheduledDTO
-  const columnDefs = useMemo(
+  const ColDef = useMemo(
     () => [
       {
         field: "testName",
@@ -70,7 +76,7 @@ export const Dashboard: React.FC = () => {
         headerName: "Schedule",
         flex: 1.2,
         minWidth: 150,
-        valueFormatter: (params: any) => {
+        valueFormatter: (params: ValueFormatterParams) => {
           if (!params.value) return "";
           const date = new Date(params.value);
           // Format: "28 Aug 2025, 08:17 PM" (you can customize)
@@ -90,7 +96,7 @@ export const Dashboard: React.FC = () => {
         flex: 0.5,
         minWidth: 60,
         type: "numericColumn",
-        valueFormatter: (params: any) => {
+        valueFormatter: (params: ValueFormatterParams) => {
           const minutes = Math.floor(params.value / 60);
           const seconds = params.value % 60;
           return `${minutes}:${seconds.toString().padStart(2, "0")}`;
@@ -116,7 +122,6 @@ export const Dashboard: React.FC = () => {
         flex: 0.5,
         minWidth: 100,
         cellRenderer: MoreVerticalIcon,
-        
       },
     ],
     []
@@ -124,7 +129,7 @@ export const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setFilters((prev) => ({ ...prev, search: searchTerm }));
+      setFilters((prev: DashboardFilters) => ({ ...prev, search: searchTerm }));
     }, 500);
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -204,7 +209,7 @@ export const Dashboard: React.FC = () => {
       setAttempt(res["mock count : "]);
     };
     fetchCount();
-  }, []);
+  }, [userId]); // Added userId dependency
 
   useEffect(() => {
     if (error) {
@@ -244,13 +249,13 @@ export const Dashboard: React.FC = () => {
 
   const handleFilterChange = useCallback(
     (key: keyof DashboardFilters, value: string) => {
-      setFilters((prev) => ({ ...prev, [key]: value }));
+      setFilters((prev: DashboardFilters) => ({ ...prev, [key]: value }));
       setCurrentGridPage(1);
     },
     []
   );
 
-  const stats = React.useMemo(() => {
+  const stats = useMemo(() => {
     return {
       total: totalElements,
       active: data?.filter((item) => item.isActive).length || 0,
@@ -444,7 +449,7 @@ export const Dashboard: React.FC = () => {
       <div className="grid-box">
         <ApiGrid
           data={scheduleFilterData}
-          columnDefs={columnDefs}
+          columns={ColDef} 
           loading={loading}
           currentPage={currentGridPage}
           totalPages={totalPages}
