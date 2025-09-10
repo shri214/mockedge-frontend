@@ -19,7 +19,6 @@ import ScrollToTop from "./utils/ScrollToTop";
 import { CreateMock } from "./components/mock/CreateMock";
 import { CreateAttempts } from "./components/mock/CreateAttempts";
 import { ExamEnv } from "./components/testEnvironment/ExamEnv";
-import { OngoingExam } from "./components/testEnvironment/OngoingExam";
 
 // Lazy load components
 const Signup = lazy(() =>
@@ -41,13 +40,13 @@ const Login = lazy(() =>
 // );
 
 const Unauthorized = lazy(() =>
-  import("./common/UnAuthorized").then((module) => ({
+  import("./common/Unauthorized").then((module) => ({
     default: module.Unauthorized,
   }))
 );
 
 const NotFound = lazy(() =>
-  import("./common/Notfound").then((module) => ({
+  import("./common/NotFound").then((module) => ({
     default: module.NotFound,
   }))
 );

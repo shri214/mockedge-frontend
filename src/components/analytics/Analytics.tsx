@@ -40,10 +40,10 @@ interface ChartDataItem {
   color: string;
 }
 
-interface TimelineDataItem {
-  date: string;
-  attempts: number;
-}
+// interface TimelineDataItem {
+//   date: string;
+//   attempts: number;
+// }
 
 // Constants
 const STATUS_COLORS = {
@@ -159,19 +159,19 @@ const prepareBarData = (stats: Stats) => [
   { status: "Not Attempted", count: stats.notAttempted },
 ];
 
-const prepareTimelineData = (data: AnalyticsData[]): TimelineDataItem[] => {
-  const dateMap = new Map<string, number>();
+// const prepareTimelineData = (data: AnalyticsData[]): TimelineDataItem[] => {
+//   const dateMap = new Map<string, number>();
   
-  data.forEach(item => {
-    const date = new Date(item.createdAt).toLocaleDateString();
-    dateMap.set(date, (dateMap.get(date) || 0) + 1);
-  });
+//   data.forEach(item => {
+//     const date = new Date(item.createdAt).toLocaleDateString();
+//     dateMap.set(date, (dateMap.get(date) || 0) + 1);
+//   });
 
-  return Array.from(dateMap.entries())
-    .map(([date, attempts]) => ({ date, attempts }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(-CHART_CONFIG.timeline.daysToShow);
-};
+//   return Array.from(dateMap.entries())
+//     .map(([date, attempts]) => ({ date, attempts }))
+//     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+//     .slice(-CHART_CONFIG.timeline.daysToShow);
+// };
 
 // Components
 const LoadingSpinner: React.FC = () => (
@@ -251,7 +251,7 @@ export const Analytics: React.FC = () => {
   const stats = useMemo(() => calculateStats(analyticsData), [analyticsData]);
   const chartData = useMemo(() => prepareChartData(stats), [stats]);
   const barData = useMemo(() => prepareBarData(stats), [stats]);
-  const timelineData = useMemo(() => prepareTimelineData(analyticsData), [analyticsData]);
+  // const timelineData = useMemo(() => prepareTimelineData(analyticsData), [analyticsData]);
   
   const completionRate = useMemo(() => calculateCompletionRate(stats), [stats]);
   const successRate = useMemo(() => calculateSuccessRate(stats), [stats]);

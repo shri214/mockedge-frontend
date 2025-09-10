@@ -35,6 +35,7 @@ export const CreateAttempts = () => {
   const testData = useAppSelector((state: RootState) =>
     state.testSchedule.data.filter((val) => val.id === testId)
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   const [currentStep, setCurrentStep] = useState<string>("selection-type");
   const [selectionType, setSelectionType] = useState<string>("");

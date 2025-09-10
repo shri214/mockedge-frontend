@@ -51,8 +51,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check permission-based access
   if (requiredPermissions.length > 0) {
-    const hasAllPermissions = requiredPermissions.every(permission =>
-      hasPermission(permission)
+    const hasAllPermissions = requiredPermissions.every(() =>
+      hasPermission()
     );
     
     if (!hasAllPermissions) {
