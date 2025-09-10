@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Calendar, Clock, FileText, Save, AlertCircle, CheckCircle, Sparkles } from "lucide-react";
-import "./CreateAttempts.scss"
+import "./createMock.scss"
 import { DateTimePicker } from "./Datepicker";
 import { toast } from "react-toastify";
 import { useAppSelector } from "../../redux/hook";
