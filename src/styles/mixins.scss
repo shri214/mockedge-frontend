@@ -1,0 +1,201 @@
+@mixin displayProperties($ff, $jc, $ai) {
+  display: flex;
+  flex-flow: $ff;
+  justify-content: $jc;
+  align-items: $ai;
+}
+
+// Modern flex mixins
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+// Professional button mixin
+@mixin button-style($bg, $color: white, $hover-bg: null) {
+  background-color: $bg;
+  color: $color;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  user-select: none;
+  
+  @if $hover-bg {
+    &:hover {
+      background-color: $hover-bg;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+  } @else {
+    &:hover {
+      filter: brightness(0.9);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+  }
+
+  &:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+// Enhanced card mixin
+@mixin card-style($padding: 1.5rem, $radius: var(--border-radius)) {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: $radius;
+  box-shadow: var(--shadow);
+  padding: $padding;
+  transition: var(--transition);
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+}
+
+// Professional transition mixin
+@mixin transition($properties: all, $duration: 0.2s, $ease: ease-in-out) {
+  transition: $properties $duration $ease;
+}
+
+// Enhanced box shadow mixin
+@mixin box-shadow($shadow: var(--shadow)) {
+  box-shadow: $shadow;
+}
+
+// Responsive mixins
+@mixin mobile {
+  @media (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: 768px) and (max-width: 1023px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin large-desktop {
+  @media (min-width: 1200px) {
+    @content;
+  }
+}
+
+// Hover lift effect
+@mixin hover-lift($distance: -2px) {
+  transition: var(--transition);
+  
+  &:hover {
+    transform: translateY($distance);
+  }
+}
+
+// Professional text styles
+@mixin text-gradient($color1: var(--primary-color), $color2: var(--spn-color)) {
+  background: linear-gradient(135deg, $color1, $color2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// Glass morphism effect
+@mixin glass-morphism($opacity: 0.95) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// Professional loading states
+@mixin loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    var(--border) 50%,
+    var(--surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// Professional form styles
+@mixin input-style {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  background: var(--background);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  transition: var(--transition);
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--text-light);
+  }
+}
+
+// Container mixin
+@mixin container($max-width: 1200px) {
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+
+  @include mobile {
+    padding: 0 1rem;
+  }
+}

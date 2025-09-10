@@ -1,0 +1,725 @@
+// OngoingExam.scss - Professional Test Environment Design
+
+// Professional Color Palette
+$primary-blue: #2563eb;
+$primary-blue-light: #dbeafe;
+$primary-blue-dark: #1d4ed8;
+
+$neutral-50: #f8fafc;
+$neutral-100: #f1f5f9;
+$neutral-200: #e2e8f0;
+$neutral-300: #cbd5e1;
+$neutral-400: #94a3b8;
+$neutral-500: #64748b;
+$neutral-600: #475569;
+$neutral-700: #334155;
+$neutral-800: #1e293b;
+$neutral-900: #0f172a;
+
+$success-green: #059669;
+$success-light: #ecfdf5;
+$warning-amber: #d97706;
+$warning-light: #fffbeb;
+$error-red: #dc2626;
+$error-light: #fef2f2;
+
+// Typography
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+$font-size-sm: 0.875rem;
+$font-size-base: 1rem;
+$font-size-lg: 1.125rem;
+$font-size-xl: 1.25rem;
+$font-size-2xl: 1.5rem;
+
+// Spacing
+$spacing-2: 0.5rem;
+$spacing-3: 0.75rem;
+$spacing-4: 1rem;
+$spacing-5: 1.25rem;
+$spacing-6: 1.5rem;
+$spacing-8: 2rem;
+
+// Border & Shadows
+$radius-md: 0.5rem;
+$radius-lg: 0.75rem;
+$shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+
+// Mixins
+@mixin card-base {
+  background: white;
+  border: 1px solid $neutral-200;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-3 $spacing-5;
+  border-radius: $radius-md;
+  font-weight: 500;
+  font-size: $font-size-sm;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.exam-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-6;
+  font-family: $font-family;
+  background: $neutral-50;
+  min-height: 100vh;
+
+  // Loading State
+  .loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    
+    svg {
+      color: $primary-blue;
+      margin-bottom: $spacing-4;
+    }
+    
+    p {
+      font-size: $font-size-lg;
+      color: $neutral-600;
+      font-weight: 500;
+    }
+  }
+
+  // Error State
+  .error-message {
+    @include card-base;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-8;
+    text-align: center;
+    margin: $spacing-8 auto;
+    max-width: 500px;
+    
+    svg {
+      margin-bottom: $spacing-4;
+      color: $error-red;
+    }
+    
+    p {
+      font-size: $font-size-base;
+      color: $neutral-700;
+      margin-bottom: $spacing-6;
+      line-height: 1.5;
+    }
+    
+    .retry-button {
+      @include button-base;
+      background: $primary-blue;
+      color: white;
+      
+      &:hover {
+        background: $primary-blue-dark;
+      }
+    }
+  }
+}
+
+// Header Section
+.exam-header {
+  @include card-base;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-6;
+  margin-bottom: $spacing-6;
+  border-top: 4px solid $primary-blue;
+
+  .exam-title {
+    h1 {
+      font-size: $font-size-2xl;
+      font-weight: 700;
+      color: $neutral-800;
+      margin: 0 0 $spacing-2 0;
+    }
+    
+    .question-counter {
+      font-size: $font-size-sm;
+      color: $neutral-600;
+      font-weight: 500;
+      background: $neutral-100;
+      padding: $spacing-2 $spacing-3;
+      border-radius: $radius-md;
+    }
+  }
+
+  .violation {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    background: $error-light;
+    color: $error-red;
+    padding: $spacing-2 $spacing-3;
+    border-radius: $radius-md;
+    font-weight: 600;
+    font-size: $font-size-sm;
+    border: 1px solid rgba($error-red, 0.2);
+  }
+
+  .exam-info {
+    display: flex;
+    gap: $spacing-4;
+    align-items: center;
+    
+    .time-info {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      padding: $spacing-3 $spacing-4;
+      border-radius: $radius-md;
+      font-weight: 500;
+      font-size: $font-size-sm;
+      background: $neutral-100;
+      color: $neutral-700;
+      border: 1px solid $neutral-200;
+    }
+    
+    .answered-status {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      padding: $spacing-3 $spacing-4;
+      border-radius: $radius-md;
+      font-weight: 500;
+      font-size: $font-size-sm;
+      background: $success-light;
+      color: $success-green;
+      border: 1px solid rgba($success-green, 0.2);
+    }
+  }
+}
+
+// Question Container
+.question-container {
+  @include card-base;
+  padding: $spacing-8;
+  margin-bottom: $spacing-6;
+  
+  .question-header {
+    margin-bottom: $spacing-6;
+    padding-bottom: $spacing-4;
+    border-bottom: 2px solid $neutral-100;
+    
+    .question-text {
+      font-size: $font-size-xl;
+      font-weight: 600;
+      color: $neutral-800;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+  
+  .options-container {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+    
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: $spacing-4;
+      padding: $spacing-5;
+      border: 2px solid $neutral-200;
+      border-radius: $radius-md;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: white;
+      
+      &:hover {
+        border-color: $primary-blue;
+        background: $primary-blue-light;
+      }
+      
+      &.selected {
+        border-color: $primary-blue;
+        background: $primary-blue-light;
+        
+        .option-radio input[type="radio"] {
+          border-color: $primary-blue;
+          background: $primary-blue;
+          
+          &::after {
+            transform: scale(1);
+          }
+        }
+      }
+      
+      &.previously-answered {
+        border-color: $success-green;
+        background: $success-light;
+        
+        &::after {
+          content: '✓';
+          position: absolute;
+          top: $spacing-3;
+          right: $spacing-3;
+          width: 20px;
+          height: 20px;
+          background: $success-green;
+          color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: bold;
+        }
+      }
+      
+      .option-radio {
+        flex-shrink: 0;
+        margin-top: 2px;
+        
+        input[type="radio"] {
+          width: 18px;
+          height: 18px;
+          border: 2px solid $neutral-300;
+          border-radius: 50%;
+          background: white;
+          cursor: pointer;
+          appearance: none;
+          position: relative;
+          
+          &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.2s ease;
+          }
+          
+          &:checked {
+            border-color: $primary-blue;
+            background: $primary-blue;
+            
+            &::after {
+              transform: translate(-50%, -50%) scale(1);
+            }
+          }
+        }
+      }
+      
+      .option-text {
+        font-size: $font-size-base;
+        color: $neutral-800;
+        line-height: 1.5;
+        font-weight: 400;
+      }
+    }
+  }
+}
+
+// Navigation Container
+.navigation-container {
+  @include card-base;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-5;
+  margin-bottom: $spacing-6;
+  
+  .nav-button {
+    @include button-base;
+    border: 1px solid $neutral-300;
+    background: white;
+    color: $neutral-700;
+    
+    &:hover:not(:disabled) {
+      border-color: $primary-blue;
+      background: $primary-blue-light;
+      color: $primary-blue;
+    }
+    
+    &.next-button:not(:disabled) {
+      background: $primary-blue;
+      border-color: $primary-blue;
+      color: white;
+      
+      &:hover {
+        background: $primary-blue-dark;
+      }
+    }
+    
+    &:disabled {
+      background: $neutral-100;
+      color: $neutral-400;
+      border-color: $neutral-200;
+    }
+  }
+  
+  .center-actions {
+    .navigation-info {
+      font-size: $font-size-sm;
+      color: $neutral-600;
+      font-weight: 500;
+      padding: $spacing-2 $spacing-4;
+      background: $neutral-100;
+      border-radius: $radius-md;
+    }
+  }
+}
+
+// Progress Section
+.question-progress {
+  @include card-base;
+  padding: $spacing-5;
+  margin-bottom: $spacing-6;
+  
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-3;
+    
+    span {
+      font-size: $font-size-sm;
+      font-weight: 500;
+      color: $neutral-600;
+    }
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: $neutral-200;
+    border-radius: $radius-md;
+    overflow: hidden;
+    
+    .progress-fill {
+      height: 100%;
+      background: $primary-blue;
+      border-radius: $radius-md;
+      transition: width 0.3s ease;
+    }
+  }
+}
+
+// Submit Container
+.submit-container {
+  display: flex;
+  justify-content: center;
+  padding: $spacing-4 0;
+  
+  .submit-button {
+    @include button-base;
+    padding: $spacing-4 $spacing-8;
+    background: $success-green;
+    color: white;
+    font-size: $font-size-base;
+    font-weight: 600;
+    
+    &:hover:not(:disabled) {
+      background: darken($success-green, 8%);
+    }
+    
+    &:disabled {
+      background: $neutral-400;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .exam-container {
+    padding: $spacing-4;
+  }
+  
+  .exam-header {
+    flex-direction: column;
+    gap: $spacing-4;
+    text-align: center;
+    
+    .exam-info {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
+  
+  .question-container {
+    padding: $spacing-5;
+    
+    .question-header .question-text {
+      font-size: $font-size-lg;
+    }
+    
+    .options-container .option-item {
+      padding: $spacing-4;
+      
+      .option-text {
+        font-size: $font-size-sm;
+      }
+    }
+  }
+  
+  .navigation-container {
+    flex-direction: column;
+    gap: $spacing-4;
+    
+    .center-actions {
+      order: -1;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .exam-header {
+    .exam-title h1 {
+      font-size: $font-size-xl;
+    }
+  }
+  
+  .question-container {
+    padding: $spacing-4;
+  }
+}
+
+/* Submit Modal Styles - Add this to your OngoingExam.scss file */
+
+.submit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.submit-modal-container {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideIn 0.3s ease-out;
+}
+
+.submit-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 0 24px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.submit-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.submit-modal-close-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.submit-modal-close-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.submit-modal-close-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submit-modal-content {
+  padding: 0 24px;
+}
+
+.submit-modal-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.submit-modal-message {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.submit-modal-primary-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.submit-modal-secondary-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.submit-modal-exam-info {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.submit-modal-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 0.875rem;
+}
+
+.submit-modal-info-row:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 4px;
+  padding-bottom: 12px;
+}
+
+.submit-modal-info-row span:first-child {
+  font-weight: 500;
+  color: #374151;
+}
+
+.submit-modal-info-row span:last-child {
+  font-weight: 600;
+}
+
+.submit-modal-actions {
+  display: flex;
+  gap: 12px;
+  padding: 0 24px 24px 24px;
+}
+
+.submit-modal-cancel-btn,
+.submit-modal-confirm-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.submit-modal-cancel-btn {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.submit-modal-cancel-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.submit-modal-confirm-btn {
+  background: #dc2626;
+  border: 1px solid #dc2626;
+  color: white;
+}
+
+.submit-modal-confirm-btn:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.submit-modal-cancel-btn:disabled,
+.submit-modal-confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Text color utilities for the modal info */
+.text-green-600 {
+  color: #16a34a !important;
+}
+
+.text-red-600 {
+  color: #dc2626 !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .submit-modal-container {
+    margin: 16px;
+    width: calc(100% - 32px);
+  }
+  
+  .submit-modal-actions {
+    flex-direction: column;
+  }
+  
+  .submit-modal-cancel-btn,
+  .submit-modal-confirm-btn {
+    flex: none;
+  }
+}

@@ -1,0 +1,212 @@
+@use "../styles/app.scss" as *;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.hero {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
+  @include flexCenter;
+  padding: 6rem var(--spacing-lg) var(--spacing-3xl);
+
+  .hero-content {
+    @include flexBetween;
+    max-width: 1200px;
+    width: 100%;
+    gap: var(--spacing-3xl);
+    align-items: center;
+  }
+
+  .hero-text {
+    flex: 1;
+    max-width: 600px;
+
+    .hero-title {
+      font-size: var(--font-size-5xl);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--text-color);
+      margin-bottom: var(--spacing-lg);
+
+      .brand-highlight {
+        color: var(--primary-color);
+      }
+    }
+
+    .hero-subtitle {
+      font-size: var(--font-size-xl);
+      color: var(--text-light);
+      margin-bottom: var(--spacing-lg);
+      font-weight: 500;
+    }
+
+    .hero-description {
+      font-size: var(--font-size-lg);
+      color: var(--text-light);
+      margin-bottom: var(--spacing-2xl);
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+
+      .btn {
+        padding: var(--spacing-md) var(--spacing-xl);
+        font-size: var(--font-size-base);
+      }
+    }
+  }
+
+  .hero-visual {
+    flex: 1;
+    @include flexCenter;
+    perspective: 1000px;
+
+    .floating-card {
+      width: 300px;
+      height: 200px;
+      background: var(--background);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      padding: var(--spacing-xl);
+      transform: rotateX(10deg) rotateY(-10deg);
+      animation: float 6s ease-in-out infinite;
+      border: 1px solid var(--border);
+
+      .card-header {
+        width: 100%;
+        height: 20px;
+        background: linear-gradient(90deg, var(--spn-color), var(--spn-accent));
+        border-radius: var(--border-radius-sm);
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .card-content {
+        .card-line {
+          height: 12px;
+          background: var(--surface);
+          border-radius: var(--border-radius-sm);
+          margin-bottom: var(--spacing-sm);
+
+          &.short {
+            width: 60%;
+          }
+
+          &.medium {
+            width: 80%;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: rotateX(10deg) rotateY(-10deg) translateY(0px); }
+  50% { transform: rotateX(10deg) rotateY(-10deg) translateY(-20px); }
+}
+
+.features {
+  padding: var(--spacing-3xl) 0;
+  background: var(--background);
+
+  .section-title {
+    text-align: center;
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-3xl);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    max-width: 1000px;
+    margin: 0 auto;
+
+    .feature-card {
+      background: var(--background);
+      padding: var(--spacing-2xl);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      @include hover-lift;
+      text-align: center;
+      border: 1px solid var(--border);
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+        border-radius: 50%;
+        @include flexCenter;
+        margin: 0 auto var(--spacing-lg);
+        color: white;
+      }
+
+      h3 {
+        font-size: var(--font-size-xl);
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: var(--spacing-sm);
+      }
+
+      p {
+        color: var(--text-light);
+        line-height: 1.6;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .hero {
+    padding: 5rem var(--spacing-md) var(--spacing-2xl);
+
+    .hero-content {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--spacing-2xl);
+    }
+
+    .hero-text {
+      .hero-title {
+        font-size: var(--font-size-3xl);
+      }
+
+      .hero-subtitle {
+        font-size: var(--font-size-lg);
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+    }
+
+    .hero-visual {
+      .floating-card {
+        width: 250px;
+        height: 160px;
+        transform: none;
+      }
+    }
+  }
+
+  .features {
+    padding: var(--spacing-2xl) var(--spacing-md);
+
+    .features-grid {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-lg);
+    }
+
+    .section-title {
+      font-size: var(--font-size-2xl);
+    }
+  }
+}
