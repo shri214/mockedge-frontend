@@ -262,8 +262,13 @@ export const CreateAttempts = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-    dispatch(setQuestionQuery(formData))
+    setIsLoading(true)
+    try{
+      dispatch(setQuestionQuery(formData))
     navigate(`/exam-env/${userId}/${testId}/${testData[0].testName}`);
+    }finally{
+      setIsLoading(false)
+    }
   };
 
   const renderConfigField = (field: string, isOptional: boolean = false) => {
