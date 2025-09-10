@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // for navigation
 import HTTP from "../../BackendApis";
-import "./Signup.scss";
+import "./signup.scss"
 import { Navbar } from "../navbar";
 import { toast } from "react-toastify";
 
