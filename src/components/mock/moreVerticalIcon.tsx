@@ -8,6 +8,8 @@ import { getDetailsMock } from "../../function/getDetails";
 import { toast } from "react-toastify";
 import { RescheduleModal } from "./RescheduleModal";
 import { reScheduled } from "../../function/reScheduledMock";
+import { fetchTestSchedules } from "../../redux/TestSchedule.slice";
+import { useAppDispatch } from "../../redux/hook";
 
 // Global state to ensure only one modal is open at a time
 let currentOpenModal: (() => void) | null = null;
@@ -15,6 +17,8 @@ let currentOpenModal: (() => void) | null = null;
 export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
   const testId = params.data.id;
   const userId = params.data.userId;
+
+  const dispatch = useAppDispatch();
 
   const [open, setOpen] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -55,9 +59,16 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
     try {
       // Use your existing API function
       const response = await reScheduled(userId, testId, newDateTime);
-      
+      dispatch(
+        fetchTestSchedules({
+          userId,
+          page: 0,
+          size: 10,
+        })
+      );
+
       toast.success("Test rescheduled successfully!");
-      
+
       // Update the grid data if needed
       if (params.api) {
         // Update the row data with new schedule
@@ -65,21 +76,23 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
         if (rowNode && rowNode.data) {
           rowNode.setData({
             ...rowNode.data,
-            scheduleMock: newDateTime
+            scheduleMock: newDateTime,
           });
         }
-        
+
         // Refresh the specific row
         params.api.refreshCells({
           rowNodes: [params.node],
-          force: true
+          force: true,
         });
       }
-      
+
       console.log("Rescheduled successfully:", response);
     } catch (err) {
       console.error("Reschedule error:", err);
-      throw new Error(err instanceof Error ? err.message : "Failed to reschedule test");
+      throw new Error(
+        err instanceof Error ? err.message : "Failed to reschedule test"
+      );
     }
   };
 
@@ -88,7 +101,7 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
       // You can implement cancel functionality here if needed
       // const res = await cancelMock(userId, testId);
       console.log("Cancel test:", testId);
-      
+
       // For now, just show confirmation
       if (window.confirm("Are you sure you want to cancel this test?")) {
         toast.success("Test cancelled successfully!");
@@ -136,19 +149,13 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
 
             <div className="modal-options">
               {params.data.scheduledStatus !== "COMPLETED" && (
-                <button
-                  className="modal-btn"
-                  onClick={handleRescheduleClick}
-                >
+                <button className="modal-btn" onClick={handleRescheduleClick}>
                   <CalendarClock size={18} /> Reschedule
                 </button>
               )}
 
               {params.data.scheduledStatus !== "COMPLETED" && (
-                <button
-                  className="modal-btn danger"
-                  onClick={handleCancelTest}
-                >
+                <button className="modal-btn danger" onClick={handleCancelTest}>
                   <XCircle size={18} /> Cancel
                 </button>
               )}
@@ -172,7 +179,7 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
         onClick={handleOpen}
       />
       {modalContent}
-      
+
       {/* Reschedule Modal */}
       <RescheduleModal
         isOpen={showRescheduleModal}

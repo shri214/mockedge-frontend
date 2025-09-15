@@ -1,396 +1,359 @@
-import React, { useState, useEffect, useMemo } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Analytics.scss";
-import { getAttemptsByUser } from "../../function/getAttemptsByUser";
-import { useAppSelector } from "../../redux/hook";
-import type { RootState } from "../../store";
+import type {
+  AttemptAnalytic,
+  TestScheduledAnalytic,
+} from "../../type/analytics.types";
+import { useParams } from "react-router-dom";
+import { TestScheduledAnalytics } from "./TestScheduledAnalytics";
+import { AttemptAnalytics } from "./AttemptAnalytics";
+import { testScheduledAnalytic } from "../../function/testScheduledAnalytics";
+import { attemptAnalytic } from "../../function/attemptAnalytics";
 
-// Types
-interface AnalyticsData {
-  testName: string;
-  scheduleMock: string;
-  maxAttemptsPerDay: number;
-  durationSeconds: number;
-  isActive: boolean;
-  createdAt: string;
-  status: "COMPLETED" | "IN_PROGRESS" | "NOT_ATTEMPTED";
+interface AnalyticsDashboardProps {
+  userId: string;
 }
 
-interface Stats {
-  totalAttempts: number;
-  completed: number;
-  inProgress: number;
-  notAttempted: number;
-}
+export const Analytics: React.FC<AnalyticsDashboardProps> = () => {
+  const { userId } = useParams();
 
-interface ChartDataItem {
-  name: string;
-  value: number;
-  color: string;
-}
-
-// interface TimelineDataItem {
-//   date: string;
-//   attempts: number;
-// }
-
-// Constants
-const STATUS_COLORS = {
-  COMPLETED: "#10B981",
-  IN_PROGRESS: "#3B82F6",
-  NOT_ATTEMPTED: "#9CA3AF",
-} as const;
-
-const CHART_CONFIG = {
-  pieChart: {
-    innerRadius: 60,
-    outerRadius: 120,
-    paddingAngle: 5,
-  },
-  timeline: {
-    height: 250,
-    daysToShow: 7,
-  },
-} as const;
-
-// Custom Hooks
-const useAnalyticsData = (userId: string | undefined) => {
-  const [data, setData] = useState<AnalyticsData[]>([]);
-  const [loading, setLoading] = useState(true);
+  // State management
+  const [activeTab, setActiveTab] = useState<"scheduled" | "attempts">("scheduled");
+  const [scheduledData, setScheduledData] = useState<TestScheduledAnalytic | null>(null);
+  const [attemptData, setAttemptData] = useState<AttemptAnalytic | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [retryAttempts, setRetryAttempts] = useState(0);
 
+  // Screen size detection for responsive behavior
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isTablet, setIsTablet] = useState(window.innerWidth > 768 && window.innerWidth <= 1024);
+
+  // Handle window resize for responsive adjustments
   useEffect(() => {
-    const fetchData = async () => {
-      if (!userId) return;
-
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await getAttemptsByUser(userId);
-        setData(response.data || []);
-      } catch (err) {
-        console.error("Error fetching attempts:", err);
-        setError("Failed to load analytics data");
-        setData([]);
-      } finally {
-        setLoading(false);
-      }
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width <= 768);
+      setIsTablet(width > 768 && width <= 1024);
     };
 
-    fetchData();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Handle online/offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Auto-retry when coming back online
+  useEffect(() => {
+    if (isOnline && error && retryAttempts > 0) {
+      const timeoutId = setTimeout(() => {
+        fetchAnalytics();
+      }, 1000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isOnline, error, retryAttempts]);
+
+  // Initial data fetch
+  useEffect(() => {
+    if (userId) {
+      fetchAnalytics();
+    }
   }, [userId]);
 
-  return { data, loading, error };
-};
-
-// Utility Functions
-const calculateStats = (data: AnalyticsData[]): Stats => {
-  const stats = {
-    totalAttempts: data.length,
-    completed: 0,
-    inProgress: 0,
-    notAttempted: 0,
-  };
-
-  data.forEach((item) => {
-    switch (item.status) {
-      case "COMPLETED":
-        stats.completed++;
-        break;
-      case "IN_PROGRESS":
-        stats.inProgress++;
-        break;
-      case "NOT_ATTEMPTED":
-        stats.notAttempted++;
-        break;
+  // Optimized fetch function with retry logic
+  const fetchAnalytics = useCallback(async () => {
+    if (!userId) {
+      setError("User ID is required");
+      return;
     }
-  });
 
-  return stats;
-};
+    if (!isOnline) {
+      setError("No internet connection. Please check your network and try again.");
+      return;
+    }
 
-const formatDuration = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-};
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Fetch both analytics data with timeout
+      const fetchWithTimeout = (promise: Promise<any>, timeout: number) => {
+        return Promise.race([
+          promise,
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timeout')), timeout)
+          ),
+        ]);
+      };
 
-const calculateCompletionRate = (stats: Stats): number => {
-  return stats.totalAttempts === 0 
-    ? 0 
-    : Math.round((stats.completed / stats.totalAttempts) * 100);
-};
+      const [scheduledResponse, attemptResponse] = await Promise.allSettled([
+        fetchWithTimeout(testScheduledAnalytic(userId), 15000).catch(err => {
+          console.error("Failed to fetch scheduled analytics:", err);
+          return null;
+        }),
+        fetchWithTimeout(attemptAnalytic(userId), 15000).catch(err => {
+          console.error("Failed to fetch attempt analytics:", err);
+          return null;
+        }),
+      ]);
 
-const calculateSuccessRate = (stats: Stats): number => {
-  const attemptedTests = stats.totalAttempts - stats.notAttempted;
-  return attemptedTests === 0 
-    ? 0 
-    : Math.round((stats.completed / attemptedTests) * 100);
-};
+      // Handle scheduled data
+      let validScheduledData = null;
+      if (scheduledResponse.status === 'fulfilled' && scheduledResponse.value && typeof scheduledResponse.value === 'object') {
+        validScheduledData = {
+          totalTests: scheduledResponse.value.totalTests || 0,
+          statusCount: scheduledResponse.value.statusCount || {},
+          tests: Array.isArray(scheduledResponse.value.tests) ? scheduledResponse.value.tests : []
+        };
+      } else {
+        validScheduledData = {
+          totalTests: 0,
+          statusCount: {},
+          tests: []
+        };
+      }
+      setScheduledData(validScheduledData);
 
-const calculateAverageDuration = (data: AnalyticsData[]): number => {
-  if (data.length === 0) return 0;
-  const totalDuration = data.reduce((sum, item) => sum + item.durationSeconds, 0);
-  return totalDuration / data.length;
-};
+      // Handle attempt data
+      let validAttemptData = null;
+      if (attemptResponse.status === 'fulfilled' && attemptResponse.value && typeof attemptResponse.value === 'object') {
+        validAttemptData = {
+          totalAttempt: attemptResponse.value.totalAttempt || 0,
+          statusCount: attemptResponse.value.statusCount || {},
+          attempt: Array.isArray(attemptResponse.value.attempt) ? attemptResponse.value.attempt : []
+        };
+      } else {
+        validAttemptData = {
+          totalAttempt: 0,
+          statusCount: {},
+          attempt: []
+        };
+      }
+      setAttemptData(validAttemptData);
 
-const prepareChartData = (stats: Stats): ChartDataItem[] => {
-  return [
-    { name: "Completed", value: stats.completed, color: STATUS_COLORS.COMPLETED },
-    { name: "In Progress", value: stats.inProgress, color: STATUS_COLORS.IN_PROGRESS },
-    { name: "Not Attempted", value: stats.notAttempted, color: STATUS_COLORS.NOT_ATTEMPTED },
-  ].filter(item => item.value > 0);
-};
+      // Check if both requests failed
+      if (scheduledResponse.status === 'rejected' && attemptResponse.status === 'rejected') {
+        throw new Error('Failed to fetch both analytics datasets');
+      }
 
-const prepareBarData = (stats: Stats) => [
-  { status: "Completed", count: stats.completed },
-  { status: "In Progress", count: stats.inProgress },
-  { status: "Not Attempted", count: stats.notAttempted },
-];
+      setRetryAttempts(0); // Reset retry attempts on success
 
-// const prepareTimelineData = (data: AnalyticsData[]): TimelineDataItem[] => {
-//   const dateMap = new Map<string, number>();
-  
-//   data.forEach(item => {
-//     const date = new Date(item.createdAt).toLocaleDateString();
-//     dateMap.set(date, (dateMap.get(date) || 0) + 1);
-//   });
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      
+      if (errorMessage.includes('timeout')) {
+        setError("Request timed out. Please check your connection and try again.");
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        setError("Network error. Please check your internet connection.");
+      } else {
+        setError("Failed to fetch analytics data. Please try again.");
+      }
+      
+      setRetryAttempts(prev => prev + 1);
+      
+      // Set empty data to prevent crashes
+      if (!scheduledData) {
+        setScheduledData({
+          totalTests: 0,
+          statusCount: {},
+          tests: []
+        });
+      }
+      if (!attemptData) {
+        setAttemptData({
+          totalAttempt: 0,
+          statusCount: {},
+          attempt: []
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, isOnline, scheduledData, attemptData]);
 
-//   return Array.from(dateMap.entries())
-//     .map(([date, attempts]) => ({ date, attempts }))
-//     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-//     .slice(-CHART_CONFIG.timeline.daysToShow);
-// };
+  // Handle tab change with mobile optimization
+  const handleTabChange = useCallback((tab: "scheduled" | "attempts") => {
+    setActiveTab(tab);
+    
+    // Scroll to top on mobile after tab change
+    if (isMobile) {
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+    }
+  }, [isMobile]);
 
-// Components
-const LoadingSpinner: React.FC = () => (
-  <div className="loading-container">
-    <div className="loading-spinner"></div>
-    <p>Loading analytics...</p>
-  </div>
-);
-
-const EmptyState: React.FC = () => (
-  <div className="empty-state">
-    <div className="empty-content">
-      <div className="empty-icon">📈</div>
-      <h3>No test attempts yet</h3>
-      <p>Start taking tests to see your analytics and progress here.</p>
-    </div>
-  </div>
-);
-
-const SummaryCard: React.FC<{
-  title: string;
-  value: number;
-  icon: string;
-  className: string;
-}> = ({ title, value, icon, className }) => (
-  <div className={`summary-card ${className}`}>
-    <div className="card-content">
-      <h3>{title}</h3>
-      <span className="number">{value}</span>
-    </div>
-    <div className="card-icon">{icon}</div>
-  </div>
-);
-
-const MetricCard: React.FC<{
-  title: string;
-  value: string | number;
-  description?: string;
-  className: string;
-  showProgressBar?: boolean;
-  progressValue?: number;
-}> = ({ title, value, description, className, showProgressBar, progressValue }) => (
-  <div className={`metric-card ${className}`}>
-    <div className="metric-content">
-      <h3>{title}</h3>
-      <span className="percentage">{value}{typeof value === 'number' ? '%' : ''}</span>
-      {description && <p className="metric-description">{description}</p>}
-      {showProgressBar && (
-        <div className="progress-bar">
-          <div 
-            className="progress-fill" 
-            style={{ width: `${progressValue || 0}%` }}
-          />
-        </div>
+  // Render loading state
+  const renderLoadingState = () => (
+    <div className="loading-container">
+      <div className="spinner"></div>
+      <p>Loading analytics data...</p>
+      {!isOnline && (
+        <p style={{ color: '#ef4444', marginTop: '0.5rem' }}>
+          Waiting for internet connection...
+        </p>
       )}
     </div>
-  </div>
-);
+  );
 
-const ChartSection: React.FC<{
-  title: string;
-  children: React.ReactNode;
-  className?: string;
-}> = ({ title, children, className = "" }) => (
-  <div className={`chart-section ${className}`}>
-    <h3>{title}</h3>
-    {children}
-  </div>
-);
+  // Render error state
+  const renderErrorState = () => (
+    <div className="error-container">
+      <div className="error-card">
+        <h2>Failed to Load Analytics</h2>
+        <p>{error}</p>
+        {!isOnline && (
+          <p style={{ color: '#ef4444', fontSize: '0.9rem', marginBottom: '1rem' }}>
+            You appear to be offline. Please check your internet connection.
+          </p>
+        )}
+        <button 
+          onClick={fetchAnalytics} 
+          className="retry-button"
+          disabled={loading || !isOnline}
+        >
+          {loading ? "Retrying..." : "Retry"}
+        </button>
+        {retryAttempts > 0 && (
+          <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.5rem' }}>
+            Retry attempts: {retryAttempts}
+          </p>
+        )}
+      </div>
+    </div>
+  );
 
-// Main Component
-export const Analytics: React.FC = () => {
-  const { user } = useAppSelector((state: RootState) => state.user);
-  const { data: analyticsData, loading, error } = useAnalyticsData(user?.id);
-
-  // Memoized calculations
-  const stats = useMemo(() => calculateStats(analyticsData), [analyticsData]);
-  const chartData = useMemo(() => prepareChartData(stats), [stats]);
-  const barData = useMemo(() => prepareBarData(stats), [stats]);
-  // const timelineData = useMemo(() => prepareTimelineData(analyticsData), [analyticsData]);
-  
-  const completionRate = useMemo(() => calculateCompletionRate(stats), [stats]);
-  const successRate = useMemo(() => calculateSuccessRate(stats), [stats]);
-  const averageDuration = useMemo(() => calculateAverageDuration(analyticsData), [analyticsData]);
-
-  if (loading) {
+  // Handle missing user ID
+  if (!userId) {
     return (
-      <div className="analytics-container">
-        <LoadingSpinner />
+      <div className="dashboard-container">
+        <div className="error-container">
+          <div className="error-card">
+            <h2>User ID Required</h2>
+            <p>Please provide a valid user ID to view analytics.</p>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  // Handle error state
+  if (error && !loading) {
     return (
-      <div className="analytics-container">
-        <div className="error-container">
-          <p>Error: {error}</p>
-        </div>
+      <div className="dashboard-container">
+        {renderErrorState()}
       </div>
     );
   }
 
   return (
-    <div className="analytics-container">
-      <div className="analytics-header">
-        <h1>Analytics Dashboard</h1>
-        <p>Track your test performance and progress</p>
+    <div className="dashboard-container">
+      <div className="analytics-dashboard-header">
+        <h1 className="dashboard-title">
+          {isMobile ? "Analytics" : "Analytics Dashboard"}
+        </h1>
+        <button
+          className="refresh-button"
+          onClick={fetchAnalytics}
+          disabled={loading || !isOnline}
+          title={!isOnline ? "No internet connection" : "Refresh data"}
+        >
+          {loading ? "Loading..." : "Refresh"}
+        </button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="summary-cards">
-        <SummaryCard
-          title="Total Attempts"
-          value={stats.totalAttempts}
-          icon="📊"
-          className="total"
-        />
-        <SummaryCard
-          title="Completed"
-          value={stats.completed}
-          icon="✅"
-          className="completed"
-        />
-        <SummaryCard
-          title="In Progress"
-          value={stats.inProgress}
-          icon="🔄"
-          className="in-progress"
-        />
-        <SummaryCard
-          title="Not Attempted"
-          value={stats.notAttempted}
-          icon="⏸️"
-          className="not-attempted"
-        />
-      </div>
+      <nav className="tab-navigation" role="tablist">
+        <button
+          className={`tab-button ${activeTab === "scheduled" ? "active" : ""}`}
+          onClick={() => handleTabChange("scheduled")}
+          role="tab"
+          aria-selected={activeTab === "scheduled"}
+          aria-controls="scheduled-panel"
+        >
+          {isMobile ? "Tests" : "Test Scheduled Analytics"}
+        </button>
+        <button
+          className={`tab-button ${activeTab === "attempts" ? "active" : ""}`}
+          onClick={() => handleTabChange("attempts")}
+          role="tab"
+          aria-selected={activeTab === "attempts"}
+          aria-controls="attempts-panel"
+        >
+          {isMobile ? "Attempts" : "Attempt Analytics"}
+        </button>
+      </nav>
 
-      {/* Key Metrics */}
-      <div className="metrics-cards">
-        <MetricCard
-          title="Completion Rate"
-          value={completionRate}
-          className="completion-rate"
-          showProgressBar
-          progressValue={completionRate}
-        />
-        <MetricCard
-          title="Average Duration"
-          value={formatDuration(averageDuration)}
-          description="Per test session"
-          className="avg-duration"
-        />
-        <MetricCard
-          title="Success Rate"
-          value={successRate}
-          description="Excluding not attempted"
-          className="success-rate"
-        />
-      </div>
+      <main className="tab-content">
+        {loading ? (
+          renderLoadingState()
+        ) : (
+          <>
+            {activeTab === "scheduled" && scheduledData && (
+              <div 
+                id="scheduled-panel" 
+                role="tabpanel" 
+                aria-labelledby="scheduled-tab"
+              >
+                <TestScheduledAnalytics 
+                  data={scheduledData} 
+                  loading={false} 
+                  isMobile={isMobile}
+                  isTablet={isTablet}
+                />
+              </div>
+            )}
+            {activeTab === "attempts" && attemptData && (
+              <div 
+                id="attempts-panel" 
+                role="tabpanel" 
+                aria-labelledby="attempts-tab"
+              >
+                <AttemptAnalytics 
+                  data={attemptData} 
+                  loading={false} 
+                  isMobile={isMobile}
+                  isTablet={isTablet}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </main>
 
-      {/* Charts */}
-      <div className="charts-container">
-        <ChartSection title="Status Distribution" className="pie-chart-section">
-          {chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={CHART_CONFIG.pieChart.innerRadius}
-                  outerRadius={CHART_CONFIG.pieChart.outerRadius}
-                  paddingAngle={CHART_CONFIG.pieChart.paddingAngle}
-                  dataKey="value"
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => [value, 'Attempts']} />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="no-data">
-              <p>No data available</p>
-            </div>
-          )}
-        </ChartSection>
-
-        <ChartSection title="Status Breakdown" className="bar-chart-section">
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={barData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey="status" 
-                tick={{ fontSize: 12 }}
-                interval={0}
-                angle={-45}
-                textAnchor="end"
-                height={80}
-              />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip 
-                formatter={(value) => [value, 'Count']}
-                contentStyle={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
-                }}
-              />
-              <Bar dataKey="count" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartSection>
-      </div>
-
-      {/* Empty State */}
-      {stats.totalAttempts === 0 && <EmptyState />}
+      {!isOnline && (
+        <div 
+          style={{
+            position: 'fixed',
+            bottom: isMobile ? '1rem' : '2rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#ef4444',
+            color: 'white',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '25px',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)',
+            zIndex: 1000,
+          }}
+        >
+          📡 You're offline
+        </div>
+      )}
     </div>
   );
 };
