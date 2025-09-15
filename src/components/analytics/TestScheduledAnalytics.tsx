@@ -17,6 +17,8 @@ import type { TestScheduledAnalytic } from "../../type/analytics.types";
 interface TestScheduledAnalyticsProps {
   data: TestScheduledAnalytic;
   loading?: boolean;
+  isMobile?:boolean;
+  isTablet?:boolean;
 }
 
 const STATUS_COLORS = {

@@ -6,6 +6,8 @@ import type { AttemptAnalytic } from '../../type/analytics.types';
 interface AttemptAnalyticsProps {
   data: AttemptAnalytic;
   loading?: boolean;
+  isMobile?:boolean;
+  isTablet?:boolean;
 }
 
 const ATTEMPT_STATUS_COLORS = {

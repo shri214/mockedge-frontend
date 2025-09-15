@@ -10,11 +10,9 @@ import { AttemptAnalytics } from "./AttemptAnalytics";
 import { testScheduledAnalytic } from "../../function/testScheduledAnalytics";
 import { attemptAnalytic } from "../../function/attemptAnalytics";
 
-interface AnalyticsDashboardProps {
-  userId: string;
-}
 
-export const Analytics: React.FC<AnalyticsDashboardProps> = () => {
+
+export const Analytics: React.FC = () => {
   const { userId } = useParams();
 
   // State management
