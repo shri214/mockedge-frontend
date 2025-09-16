@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // for navigation
 import HTTP from "../../BackendApis";
-import "./signup.scss"
+import "./signup.scss";
 import { Navbar } from "../navbar";
 import { toast } from "react-toastify";
 
@@ -13,7 +13,9 @@ export const Signup: React.FC = () => {
     password: "",
   });
 
-  const navigation=useNavigate();
+  const [isLoading, setLoading] = useState<boolean>(false);
+
+  const navigation = useNavigate();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUser({
@@ -23,16 +25,20 @@ export const Signup: React.FC = () => {
   };
 
   const submitHandler = (e: React.FormEvent) => {
+    setLoading(true);
     e.preventDefault();
     HTTP.post("/user/signUp", user)
       .then((response) => {
         console.log(response.data);
         toast.success("Signup successful!");
-        navigation("/login")
+        navigation("/login");
       })
       .catch((error) => {
         console.error("There was an error!", error);
         toast.error("Signup failed!");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -100,7 +106,11 @@ export const Signup: React.FC = () => {
             </div>
 
             <button type="submit" className="btn-primary">
-              Sign Up
+              {isLoading ? (
+                <div className="spinner">Sign up....</div>
+              ) : (
+                <>Sign up</>
+              )}
             </button>
           </form>
 
