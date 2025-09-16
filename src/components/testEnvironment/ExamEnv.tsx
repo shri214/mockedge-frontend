@@ -343,7 +343,6 @@ Or go to your browser settings and enable camera/microphone permissions for this
               Cancel
             </button>
             <button 
-              onClick={handleRequestPermissions} 
               className="exam-env-continue-btn"
               disabled={isRequestingPermissions}
             >
