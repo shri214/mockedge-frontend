@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, User, Calendar, CheckCircle, XCircle, AlertCircle, FileText, Timer, Users } from 'lucide-react';
+import { Clock, User, Calendar, CheckCircle, XCircle, AlertCircle, FileText } from 'lucide-react';
 import './MockDetailsPage.scss';
 
 interface AttemptDetails {
