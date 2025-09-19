@@ -2,308 +2,148 @@
 @use "../styles/mixins.scss";
 
 .navbar {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 1rem 2rem;
+  background-color: v.$background-color;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   position: sticky;
   top: 0;
-  z-index: 1000;
-  @include mixins.transition(all, 0.3s);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  z-index: 1000;   
+  left: 0;
 
-  @include mixins.flex-between;
-
-  // Scrolled state
-  &.scrolled {
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.12);
-  }
 
   .navbar-brand {
-    @include mixins.flex-center;
-    gap: 0.75rem;
-
+    font-size: 1.5em;
+    font-weight: bold;
     .logoImages {
-      @include mixins.transition(transform, 0.3s);
-
       img {
-        height: 48px;
-        width: 48px;
+        height: 40px;
+        width: auto;
         object-fit: contain;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 100%;
       }
-
-      &:hover {
-        transform: scale(1.05);
-      }
-    }
-
-    .brand-text {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: v.$text-color;
-      text-decoration: none;
-      letter-spacing: -0.025em;
     }
   }
 
   .navbar-burger {
     display: none;
-    width: 32px;
-    height: 32px;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px;
-    border-radius: 8px;
-    @include mixins.transition(all, 0.3s);
-    position: relative;
-    z-index: 1001;
-
-    &:hover {
-      background: rgba(59, 130, 246, 0.1);
-    }
+    z-index: 1;
 
     span {
       display: block;
-      width: 24px;
-      height: 2px;
-      background: v.$text-color;
+      height: 3px;
+      background: white;
       border-radius: 2px;
-      @include mixins.transition(all, 0.3s);
-      margin: 2px 0;
+      transition: all 0.3s ease;
     }
 
-    &.is-active {
-      span:nth-child(1) {
-        transform: rotate(45deg) translate(6px, 6px);
-      }
-      span:nth-child(2) {
-        opacity: 0;
-        transform: scale(0);
-      }
-      span:nth-child(3) {
-        transform: rotate(-45deg) translate(6px, -6px);
-      }
+    &.is-active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    &.is-active span:nth-child(2) {
+      opacity: 0;
+    }
+    &.is-active span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
     }
   }
 
   .navbar-menu {
-    @include mixins.flex-between;
-    width: auto;
-    gap: 3rem;
+    width: 70%;
+    @include mixins.displayProperties(row, space-between, center);
 
     .navbar-start {
-      @include mixins.flex-center;
-      gap: 2rem;
+      @include mixins.displayProperties(row, flex-start, center);
+      gap: 15px;
 
       .navbar-item {
         position: relative;
-        color: v.$text-color;
+        color: white;
         text-decoration: none;
         font-family: v.$font-stack;
-        font-size: 0.95rem;
-        font-weight: 500;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        @include mixins.transition(all, 0.3s);
+        font-size: 1em;
+        font-weight: bold;
 
-        &:hover {
-          color: v.$primary-color;
-          background: rgba(59, 130, 246, 0.08);
-          transform: translateY(-1px);
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0%;
+          height: 2px;
+          background: white;
+          transition: width 0.3s ease-in-out;
         }
-
-        &.active {
-          color: v.$primary-color;
-          background: rgba(59, 130, 246, 0.1);
-          font-weight: 600;
+        &:hover::after {
+          width: 100%;
         }
       }
     }
 
     .navbar-end {
-      @include mixins.flex-center;
-      gap: 1rem;
-
       .button {
-        @include mixins.button-style(transparent, v.$text-color);
-        padding: 0.625rem 1.25rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        border: 2px solid transparent;
-        @include mixins.transition(all, 0.3s);
-        min-width: auto;
-
-        &.primary {
-          @include mixins.button-style(
-            v.$primary-color,
-            white,
-            v.$primary-hover
-          );
-
-          &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
-          }
-        }
-
-        &.secondary {
-          border-color: v.$border;
-          color: v.$text-color;
-          background: white;
-
-          &:hover {
-            border-color: v.$primary-color;
-            color: v.$primary-color;
-            background: rgba(59, 130, 246, 0.05);
-            transform: translateY(-1px);
-          }
-        }
-
-        &.ghost {
-          color: v.$text-light;
-
-          &:hover {
-            color: v.$text-color;
-            background: rgba(0, 0, 0, 0.05);
-          }
-        }
+        margin-right: 15px;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        text-decoration: none;
+       
       }
     }
   }
 }
 
-@include mixins.mobile {
+/* 📱 Responsive (≤767px) */
+@media (max-width: 767px) {
   .navbar {
-    padding: 1rem 1.5rem;
-
     .navbar-burger {
-      @include mixins.flex-column-center;
+      display: flex;
     }
 
     .navbar-menu {
       position: fixed;
       top: 0;
-      right: -100%;
-      width: 300px;
+      right: -100%; // hidden off-screen
+      width: 250px;
       height: 100vh;
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: v.$background-color;
       flex-direction: column;
       justify-content: flex-start;
-      align-items: stretch;
-      padding: 5rem 2rem 2rem;
-      gap: 2rem;
-      @include mixins.transition(right, 0.4s, cubic-bezier(0.4, 0, 0.2, 1));
-      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
-
-      &.is-active {
-        right: 0;
-      }
+      align-items: flex-start;
+      padding: 80px 20px 20px;
+      gap: 20px;
+      transition: right 0.3s ease-in-out;
 
       .navbar-start {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 15px;
         width: 100%;
-        align-items: stretch;
-
-        .navbar-item {
-          padding: 1rem;
-          border-radius: 12px;
-          font-size: 1rem;
-          text-align: left;
-          border: 1px solid transparent;
-
-          &:hover {
-            border-color: rgba(59, 130, 246, 0.2);
-            background: rgba(59, 130, 246, 0.05);
-          }
-        }
       }
 
       .navbar-end {
-        flex-direction: column;
-        gap: 1rem;
-        width: 100%;
         margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
 
         .button {
           width: 100%;
-          padding: 1rem;
-          font-size: 1rem;
-          justify-content: center;
-          border-radius: 12px;
+          text-align: center;
         }
       }
-    }
-  }
-}
 
-@include mixins.tablet {
-  .navbar {
-    padding: 1rem 2rem;
-
-    .navbar-menu {
-      gap: 2rem;
-
-      .navbar-start {
-        gap: 1.5rem;
+      &.is-active {
+        right: 0; // slide in
       }
     }
   }
-}
-
-/* Large Desktop Styles */
-@include mixins.large-desktop {
-  .navbar {
-    padding: 1.25rem 3rem;
-
-    .navbar-menu {
-      gap: 4rem;
-    }
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .navbar {
-    background: rgba(15, 23, 42, 0.95);
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-
-    .navbar-brand .brand-text,
-    .navbar-menu .navbar-start .navbar-item {
-      color: #f1f5f9;
-    }
-
-    .navbar-burger span {
-      background: #f1f5f9;
-    }
-
-    .navbar-menu {
-      @include mixins.mobile {
-        background: rgba(15, 23, 42, 0.98);
-      }
-    }
-  }
-}
-
-/* Animation for smooth entrance */
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.navbar-menu.is-active {
-  animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -10,7 +10,6 @@ import type { RootState } from "../store";
 
 export const Navbar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const { user } = useSelector((state: RootState) => state.user);
@@ -21,24 +20,12 @@ export const Navbar: React.FC = () => {
   // Check if current URL contains "dashboard"
   const isOnDashboard = location.pathname.includes("/dashboard");
 
+
   const handleLogout = () => {
     dispatch(clearUser());
-    localStorage.removeItem("accessToken");
-    setMenuOpen(false); // Close menu on logout
+    localStorage.removeItem("accessToken")
   };
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 10;
-      setScrolled(isScrolled);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Handle click outside menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -56,34 +43,11 @@ export const Navbar: React.FC = () => {
     };
   }, []);
 
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, []);
-
-  // Determine if a nav item is active
-  const isActiveRoute = (path: string): boolean => {
-    if (path === '/') {
-      return location.pathname === '/';
-    }
-    return location.pathname.startsWith(path);
-  };
-
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+    <nav className="navbar">
       <div className="navbar-brand">
-        <a className="logoImages" href="/" onClick={() => setMenuOpen(false)}>
-          <img src={logo} alt="MockEdge Logo" />
-        </a>
-        <a href="/" className="brand-text" onClick={() => setMenuOpen(false)}>
-          MockEdge
+        <a className="logoImages" href="/">
+          <img src={logo} alt="Logo" style={{ maxHeight: "3rem" }} />
         </a>
       </div>
 
@@ -91,11 +55,9 @@ export const Navbar: React.FC = () => {
       <button
         className={`navbar-burger ${menuOpen ? "is-active" : ""}`}
         onClick={(e) => {
-          e.stopPropagation();
+          e.stopPropagation(); // ✅ stop event first
           setMenuOpen(!menuOpen);
         }}
-        aria-label="Toggle navigation menu"
-        aria-expanded={menuOpen}
       >
         <span />
         <span />
@@ -108,76 +70,40 @@ export const Navbar: React.FC = () => {
         className={`navbar-menu ${menuOpen ? "is-active" : ""}`}
       >
         <div className="navbar-start">
-          <a 
-            className={`navbar-item ${isActiveRoute('/') ? 'active' : ''}`} 
-            href="/"
-            onClick={() => setMenuOpen(false)}
-          >
+          <a className="navbar-item" href="/">
             Home
           </a>
-          <a 
-            className={`navbar-item ${isActiveRoute('/about') ? 'active' : ''}`} 
-            href="/about"
-            onClick={() => setMenuOpen(false)}
-          >
+          <a className="navbar-item" href="/about">
             About
           </a>
-          <a 
-            className={`navbar-item ${isActiveRoute('/contact') ? 'active' : ''}`} 
-            href="/contact"
-            onClick={() => setMenuOpen(false)}
-          >
+          <a className="navbar-item" href="/contact">
             Contact
           </a>
         </div>
-        
         <div className="navbar-end">
           {user === null || user.accessToken === null ? (
             <>
-              <a 
-                className="button secondary" 
-                href="/login"
-                onClick={() => setMenuOpen(false)}
-              >
+              <a className="button primary" href="/login">
                 Log in
               </a>
-              <a 
-                className="button primary" 
-                href="/signup"
-                onClick={() => setMenuOpen(false)}
-              >
+              <a className="button primary" href="/signup">
                 Sign up
               </a>
             </>
           ) : (
             <>
-              {!isOnDashboard && (
-                <a 
-                  className="button secondary" 
-                  href={`/dashboard/${user.id}`}
-                  onClick={() => setMenuOpen(false)}
-                >
+               {!isOnDashboard && (
+                <a className="button primary" href={`/dashboard/${user.id}`}>
                   Dashboard
                 </a>
               )}
-              <button 
-                className="button ghost" 
-                onClick={handleLogout}
-              >
-                Logout
+              <button className="button primary" onClick={handleLogout}>
+                logout
               </button>
             </>
           )}
         </div>
       </div>
-
-      {/* Overlay for mobile menu */}
-      {menuOpen && (
-        <div 
-          className="navbar-overlay"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
     </nav>
   );
 };
