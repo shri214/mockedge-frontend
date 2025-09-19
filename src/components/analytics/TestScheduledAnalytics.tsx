@@ -156,7 +156,6 @@ export const TestScheduledAnalytics: React.FC<TestScheduledAnalyticsProps> = ({
                   {STATUS_LABELS[test.status]}
                 </span>
               </div>
-              <div className="test-id">ID: {test.id}</div>
             </div>
           ))}
         </div>

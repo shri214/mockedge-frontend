@@ -20,7 +20,7 @@ interface ApiGridProps {
 
 const ApiGrid: React.FC<ApiGridProps> = ({
   data,
-  columns, // This was already being destructured but not defined in props
+  columns, 
   loading,
   currentPage,
   totalPages,

@@ -6,6 +6,7 @@ import { BreadcrumbNavigation } from "./BreadcrumbNavigation";
 import { Menu, Bell, Search } from "lucide-react";
 import "./dashboardLayout.scss";
 import { setCollapse } from "../../redux/collapse.slice";
+import { getAvatar } from "../../function/getAvatar";
 
 // Consistent breakpoint
 const MOBILE_BREAKPOINT = 1024;
@@ -14,6 +15,8 @@ export const DashboardLayout = () => {
   const dispatch = useDispatch();
   const { isCollapsed } = useSelector((state: any) => state.collapse);
   const { user } = useSelector((state: any) => state.user);
+
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
 
   // Single source of truth for mobile detection
   const [isMobile, setIsMobile] = useState(() => {
@@ -81,7 +84,7 @@ export const DashboardLayout = () => {
   // Handle desktop sidebar toggle
   const handleDesktopToggle = useCallback(() => {
     if (!isMobile) {
-      setIsDesktopSidebarCollapsed((prev:any) => !prev);
+      setIsDesktopSidebarCollapsed((prev: any) => !prev);
     }
   }, [isMobile]);
 
@@ -98,6 +101,12 @@ export const DashboardLayout = () => {
       return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [isMobile, isMobileSidebarOpen]);
+
+  useEffect(() => {
+    getAvatar(user?.id)
+      .then((url) => setAvatarUrl(url))
+      .catch((err) => console.error(err));
+  }, [user?.id]);
 
   // Determine current sidebar state based on screen size
   const currentSidebarCollapsed = isMobile ? false : isDesktopSidebarCollapsed;
@@ -203,7 +212,7 @@ export const DashboardLayout = () => {
             <div className="dashboard-layout__user-menu">
               <img
                 src={
-                  user?.avatar ||
+                  avatarUrl ||
                   `https://ui-avatars.com/api/?name=${
                     user?.name || "User"
                   }&background=6366f1&color=fff`

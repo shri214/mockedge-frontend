@@ -1,4 +1,4 @@
-// MoreVerticalIcon.tsx - Updated with your API function
+// MoreVerticalIcon.tsx - Updated with MockDetailsPage modal
 import React, { useState, useEffect } from "react";
 import { MoreVertical, CalendarClock, XCircle, Eye } from "lucide-react";
 import { createPortal } from "react-dom";
@@ -10,8 +10,8 @@ import { RescheduleModal } from "./RescheduleModal";
 import { reScheduled } from "../../function/reScheduledMock";
 import { fetchTestSchedules } from "../../redux/TestSchedule.slice";
 import { useAppDispatch } from "../../redux/hook";
+import { MockDetailsModal } from "./MockDetailsModal";
 
-// Global state to ensure only one modal is open at a time
 let currentOpenModal: (() => void) | null = null;
 
 export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
@@ -22,14 +22,14 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
 
   const [open, setOpen] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [showMockDetailsModal, setShowMockDetailsModal] = useState(false);
+  const [mockDetailsData, setMockDetailsData] = useState(null);
 
   const handleOpen = () => {
-    // Close any other open modal first
     if (currentOpenModal) {
       currentOpenModal();
     }
 
-    // Set current modal as the active one
     currentOpenModal = () => setOpen(false);
     setOpen(true);
   };
@@ -43,6 +43,10 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
     try {
       const res = await getDetailsMock(userId, testId);
       console.log(res);
+      
+      setMockDetailsData(res);
+      setShowMockDetailsModal(true);
+      
       handleClose();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to get details");
@@ -113,6 +117,11 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
     }
   };
 
+  const handleCloseMockDetails = () => {
+    setShowMockDetailsModal(false);
+    setMockDetailsData(null);
+  };
+
   // Handle outside clicks and escape key
   useEffect(() => {
     if (!open) return;
@@ -174,7 +183,7 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
     <>
       {/* Action icon */}
       <MoreVertical
-        size={18}
+        size={24}
         className="more-vertical-icon"
         onClick={handleOpen}
       />
@@ -186,6 +195,13 @@ export const MoreVerticalIcon: React.FC<ICellRendererParams> = (params) => {
         onClose={() => setShowRescheduleModal(false)}
         onReschedule={handleRescheduleSubmit}
         currentDateTime={params.data.scheduleMock || ""}
+      />
+
+      {/* Mock Details Modal */}
+      <MockDetailsModal
+        isOpen={showMockDetailsModal}
+        onClose={handleCloseMockDetails}
+        mockData={mockDetailsData}
       />
     </>
   );

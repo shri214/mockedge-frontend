@@ -148,8 +148,8 @@ export interface OngoingExamProps {
   onExitSecure: () => void;
   setIsSubmitted?: (isSubmitting: boolean) => void;
   violations?: SecurityViolation[];
-  onSubmissionStart?:()=>void;
-  onSubmissionEnd?:()=>void;
+  onSubmissionStart?: () => void;
+  onSubmissionEnd?: () => void;
 }
 
 export interface PaginationInfo {
@@ -164,4 +164,51 @@ export interface ApiResponse {
   totalQuestions: number;
   currentPage: number;
   hasNext: boolean;
+}
+
+export interface IChangePassInfo {
+  email: string;
+  oldPassword: string;
+  newPassword: string;
+}
+
+
+export interface AttemptDetails {
+  id: string;
+  mockName: string;
+  userName: string;
+  status: string;
+  startTime: string;
+  isJoined: boolean;
+}
+
+export interface QuestionDetail {
+  question: string;
+  options: string[];
+  givenAnswer: string | null;
+  correctAnswer: string;
+}
+
+export interface TestScheduledDetails {
+  id: string;
+  userId: string;
+  testName: string;
+  scheduleMock: string;
+  maxAttemptsPerDay: number;
+  durationSeconds: number;
+  isActive: boolean;
+  createdAt: string;
+  scheduledStatus: string;
+}
+
+export interface MockDetailsData {
+  attemptDetails?: AttemptDetails;
+  questionDetails?: QuestionDetail[];
+  testScheduledDetails?: TestScheduledDetails;
+}
+
+export interface MockDetailsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  mockData: MockDetailsData | null;
 }

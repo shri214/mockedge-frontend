@@ -15,6 +15,7 @@ interface UserState {
     email: string;
     role: string;
     accessToken: string | null;
+    updatedAt:string;
   } | null;
   loading: boolean;
   error: string | null;
@@ -41,6 +42,7 @@ export const loginUser = createAsyncThunk(
           email: data.user.email,
           role: data.user.role,
           accessToken: data.user.token,
+          updatedAt:data.user.updatedAt,
         },
       };
     } catch (err: any) {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import "./sidebar.scss";
 import { clearUser } from "../../redux/User.slice";
+import { getAvatar } from "../../function/getAvatar";
 
 // Define the props interface
 interface SidebarProps {
@@ -32,6 +33,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { user } = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
+
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
+
   
   const userId = user?.id ?? "me";
 
@@ -90,6 +94,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const showCollapseButton = !isMobile;
   const currentCollapsed = isMobile ? false : isSidebarCollapsed;
 
+
+useEffect(() => {
+  getAvatar(user?.id)
+    .then((url) => setAvatarUrl(url))
+    .catch((err) => console.error(err));
+}, [user?.id]);
+
   return (
     <aside className={sidebarClasses}>
       {/* Header */}
@@ -129,7 +140,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="sidebar__user-avatar">
           <img
             src={
-              user?.avatar ||
+              avatarUrl ||
               `https://ui-avatars.com/api/?name=${
                 user?.name || "User"
               }&background=6366f1&color=fff`

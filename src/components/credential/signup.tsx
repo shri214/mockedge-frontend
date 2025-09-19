@@ -105,9 +105,12 @@ export const Signup: React.FC = () => {
               />
             </div>
 
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary" disabled={isLoading}>
               {isLoading ? (
-                <div className="spinner">Sign up....</div>
+                <>
+                  <div className="spinner" />
+                  Sign Up ....
+                </>
               ) : (
                 <>Sign up</>
               )}

@@ -1,4 +1,3 @@
-// SecureExamEnvironment.scss - Professional styling for secure exam environment
 
 // Variables
 $primary-color: #1e40af;
@@ -651,11 +650,22 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  // MOBILE FIX: Ensure scrollable content on mobile
+  overflow-y: auto;
+  // MOBILE FIX: Add safe area for mobile devices
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom));
 }
 
 .secure-instructions-content {
   max-width: 500px;
   text-align: center;
+  // MOBILE FIX: Ensure content is fully visible
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
 }
 
 .secure-instructions-icon {
@@ -696,6 +706,7 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
   padding: 1.5rem;
   margin: 2rem 0;
   text-align: left;
+  width: 100%;
 }
 
 .secure-exam-details-title {
@@ -727,6 +738,11 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
   padding: 16px 32px;
   margin-top: 2rem;
   box-shadow: $shadow-lg;
+  // MOBILE FIX: Ensure button is always accessible
+  width: 100%;
+  min-height: 60px;
+  position: relative;
+  z-index: 100;
 
   &:not(:disabled):hover {
     background: linear-gradient(135deg, #047857, $success-color);
@@ -805,19 +821,38 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
   }
 }
 
-// Responsive Design
+// MOBILE RESPONSIVE DESIGN - MAJOR FIXES
 @media (max-width: 1024px) {
   .secure-verification-main {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
+    height: 100vh;
+    // MOBILE FIX: Ensure proper height calculation
+    height: calc(100vh - 60px);
   }
   
   .secure-verification-camera-panel {
     border-right: none;
     border-bottom: 1px solid $border-color;
+    padding: 1.5rem;
+    // MOBILE FIX: Limit camera panel height on tablets
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+
+  .secure-verification-instructions {
+    // MOBILE FIX: Ensure instructions panel takes remaining height
+    min-height: 60vh;
+    padding: 1.5rem;
+  }
+
+  .secure-camera-container {
+    aspect-ratio: 16/9;
+    max-height: 200px;
   }
 }
 
+// MOBILE PHONE SPECIFIC FIXES
 @media (max-width: 768px) {
   .secure-agreement-container {
     margin: 0.5rem;
@@ -847,18 +882,94 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
   
   .secure-verification-topbar {
     padding: 0 1rem;
+    height: 50px;
   }
   
   .secure-verification-topbar-right {
-    gap: 1rem;
+    gap: 0.75rem;
   }
   
   .secure-status-time {
-    display: none; // Hide time on mobile to save space
+    font-size: 0.75rem;
+  }
+
+  // MOBILE FIX: Adjust main layout for mobile
+  .secure-verification-main {
+    padding-top: 50px;
+    grid-template-rows: 300px 1fr;
+    height: calc(100vh - 50px);
   }
   
   .secure-verification-camera-panel {
-    padding: 1.5rem;
+    padding: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .secure-camera-container {
+    aspect-ratio: 16/9;
+    max-height: 150px;
+    margin-bottom: 1rem;
+  }
+
+  // MOBILE FIX: Critical - Instructions panel mobile optimization
+  .secure-verification-instructions {
+    padding: 1rem;
+    min-height: calc(100vh - 350px);
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow-y: auto;
+    // MOBILE FIX: Add safe area padding for notched devices
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 20px));
+  }
+
+  .secure-instructions-content {
+    max-width: none;
+    width: 100%;
+    min-height: auto;
+    justify-content: flex-start;
+    // MOBILE FIX: Add top margin to prevent content being too high
+    margin-top: 1rem;
+  }
+
+  .secure-instructions-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1.5rem;
+  }
+
+  .secure-instructions-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .secure-instructions-list {
+    margin-bottom: 1.5rem;
+    
+    p {
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .secure-exam-details {
+    margin: 1.5rem 0;
+    padding: 1rem;
+  }
+
+  // MOBILE FIX: Critical - Start Exam Button mobile optimization
+  .secure-start-exam-btn {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    min-height: 56px;
+    font-size: 1rem;
+    padding: 16px 24px;
+    // MOBILE FIX: Ensure button stays visible and accessible
+    position: sticky;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    z-index: 1000;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1), $shadow-lg;
   }
   
   .secure-violations-panel {
@@ -868,6 +979,7 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
   }
 }
 
+// SMALL MOBILE PHONES - CRITICAL FIXES
 @media (max-width: 480px) {
   .secure-setup-container {
     padding: 2rem 1.5rem;
@@ -882,11 +994,228 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
     text-align: center;
     gap: 0.75rem;
   }
+
+  // MOBILE FIX: Topbar optimization for small screens
+  .secure-verification-topbar {
+    height: 45px;
+    padding: 0 0.75rem;
+  }
+
+  .secure-topbar-text {
+    font-size: 0.75rem;
+  }
   
   .secure-verification-topbar-right {
-    flex-direction: column;
     gap: 0.5rem;
-    align-items: flex-end;
+  }
+
+  .secure-status-indicator {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.625rem;
+    
+    .secure-status-icon {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  .secure-status-time {
+    display: none; // Hide time on small screens
+  }
+
+  // MOBILE FIX: Main layout for very small screens
+  .secure-verification-main {
+    padding-top: 45px;
+    grid-template-rows: 250px 1fr;
+    height: calc(100vh - 45px);
+  }
+
+  .secure-verification-camera-panel {
+    max-height: 250px;
+    padding: 0.75rem;
+  }
+
+  .secure-camera-panel-title {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .secure-camera-container {
+    max-height: 120px;
+    margin-bottom: 0.75rem;
+  }
+
+  .secure-camera-status {
+    padding: 0.75rem;
+  }
+
+  .secure-status-row {
+    font-size: 0.75rem;
+  }
+
+  // MOBILE FIX: Instructions panel for small screens
+  .secure-verification-instructions {
+    padding: 0.75rem;
+    min-height: calc(100vh - 295px);
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 25px));
+  }
+
+  .secure-instructions-content {
+    margin-top: 0.5rem;
+  }
+
+  .secure-instructions-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 1rem;
+    padding: 10px;
+  }
+
+  .secure-instructions-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .secure-instructions-list {
+    margin-bottom: 1rem;
+    
+    p {
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      margin-bottom: 0.4rem;
+    }
+  }
+
+  .secure-exam-details {
+    margin: 1rem 0;
+    padding: 0.75rem;
+  }
+
+  .secure-exam-details-title {
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .secure-exam-name {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .secure-exam-questions {
+    font-size: 0.8125rem;
+  }
+
+  // MOBILE FIX: Critical - Button optimization for very small screens
+  .secure-start-exam-btn {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    min-height: 52px;
+    font-size: 0.9375rem;
+    padding: 14px 20px;
+    // MOBILE FIX: Enhanced sticky positioning for small screens
+    position: sticky;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    background: $gradient-success !important;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.15), $shadow-lg;
+    border: 2px solid transparent;
+  }
+}
+
+// LANDSCAPE MOBILE ORIENTATION FIX
+@media (max-width: 768px) and (orientation: landscape) {
+  .secure-verification-main {
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: 1fr;
+    height: calc(100vh - 50px);
+  }
+  
+  .secure-verification-camera-panel {
+    border-right: 1px solid $border-color;
+    border-bottom: none;
+    max-height: none;
+    padding: 1rem;
+  }
+
+  .secure-camera-container {
+    max-height: 140px;
+  }
+
+  .secure-verification-instructions {
+    min-height: auto;
+    padding: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .secure-instructions-content {
+    margin-top: 0;
+  }
+
+  .secure-start-exam-btn {
+    position: relative;
+    bottom: auto;
+    margin-bottom: 1rem;
+    box-shadow: $shadow-lg;
+  }
+}
+
+// VERY SMALL LANDSCAPE SCREENS
+@media (max-width: 480px) and (orientation: landscape) {
+  .secure-verification-main {
+    grid-template-columns: 240px 1fr;
+  }
+
+  .secure-verification-camera-panel {
+    padding: 0.75rem;
+  }
+
+  .secure-camera-container {
+    max-height: 100px;
+  }
+
+  .secure-instructions-title {
+    font-size: 1.125rem;
+  }
+
+  .secure-instructions-list p {
+    font-size: 0.75rem;
+  }
+
+  .secure-start-exam-btn {
+    min-height: 48px;
+    font-size: 0.875rem;
+  }
+}
+
+// iOS Safari specific fixes for viewport issues
+@supports (-webkit-touch-callout: none) {
+  .secure-verification-main {
+    // iOS Safari viewport fix
+    height: calc(100vh - 60px - env(safe-area-inset-bottom));
+  }
+
+  @media (max-width: 768px) {
+    .secure-verification-main {
+      height: calc(100vh - 50px - env(safe-area-inset-bottom));
+    }
+    
+    .secure-verification-instructions {
+      padding-bottom: calc(1rem + env(safe-area-inset-bottom, 20px));
+    }
+
+    .secure-start-exam-btn {
+      bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  @media (max-width: 480px) {
+    .secure-verification-main {
+      height: calc(100vh - 45px - env(safe-area-inset-bottom));
+    }
+
+    .secure-start-exam-btn {
+      bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    }
   }
 }
 
@@ -1111,266 +1440,6 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
   }
 }
 
-// Security timeline
-.secure-violations-timeline {
-  max-height: 200px;
-  overflow-y: auto;
-  background: $bg-secondary;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-top: 1rem;
-  
-  .secure-violation-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    border-bottom: 1px solid $border-color;
-    
-    &:last-child {
-      border-bottom: none;
-    }
-    
-    &.violation-warning {
-      .secure-violation-severity {
-        color: $warning-color;
-        background: rgba($warning-color, 0.1);
-      }
-    }
-    
-    &.violation-critical {
-      .secure-violation-severity {
-        color: $error-color;
-        background: rgba($error-color, 0.1);
-      }
-    }
-  }
-  
-  .secure-violation-severity {
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  
-  .secure-violation-details {
-    flex: 1;
-    
-    .secure-violation-description {
-      font-weight: 500;
-      color: $text-primary;
-      margin-bottom: 0.25rem;
-    }
-    
-    .secure-violation-time {
-      font-size: 0.75rem;
-      color: $text-muted;
-    }
-  }
-}
-
-// Progress indicators
-.secure-progress-bar {
-  width: 100%;
-  height: 4px;
-  background: $border-light;
-  border-radius: 2px;
-  overflow: hidden;
-  margin: 1rem 0;
-  
-  .secure-progress-fill {
-    height: 100%;
-    background: $gradient-primary;
-    border-radius: 2px;
-    transition: width 0.3s ease;
-    position: relative;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-      animation: progressShimmer 2s ease-in-out infinite;
-    }
-  }
-}
-
-// Professional step indicators
-.secure-step-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin: 2rem 0;
-  
-  .secure-step {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.875rem;
-    position: relative;
-    
-    &.step-completed {
-      background: $gradient-success;
-      color: $text-white;
-    }
-    
-    &.step-active {
-      background: $gradient-primary;
-      color: $text-white;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    
-    &.step-pending {
-      background: $bg-tertiary;
-      color: $text-muted;
-      border: 2px solid $border-color;
-    }
-    
-    &:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      left: 100%;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 1rem;
-      height: 2px;
-      background: $border-color;
-    }
-  }
-}
-
-// Enhanced interactive elements
-.secure-interactive-card {
-  background: $bg-primary;
-  border: 2px solid $border-color;
-  border-radius: 12px;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba($primary-color, 0.1), transparent);
-    transition: left 0.6s ease;
-  }
-  
-  &:hover {
-    border-color: $primary-color;
-    transform: translateY(-2px);
-    box-shadow: $shadow-lg;
-    
-    &::before {
-      left: 100%;
-    }
-  }
-  
-  &.card-selected {
-    border-color: $primary-color;
-    background: linear-gradient(135deg, rgba($primary-color, 0.05), rgba($primary-color, 0.02));
-  }
-}
-
-// Security badge
-.secure-security-verified-badge {
-  position: fixed;
-  top: 50%;
-  left: 2rem;
-  transform: translateY(-50%);
-  background: $gradient-success;
-  color: $text-white;
-  padding: 1rem;
-  border-radius: 50%;
-  box-shadow: $shadow-xl;
-  z-index: 10001;
-  animation: securityPulse 3s ease-in-out infinite;
-  
-  .secure-badge-icon {
-    width: 24px;
-    height: 24px;
-  }
-}
-
-// Toast notifications
-.secure-toast-container {
-  position: fixed;
-  top: 80px;
-  right: 2rem;
-  z-index: 10002;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-width: 400px;
-}
-
-.secure-toast {
-  background: $bg-primary;
-  border: 1px solid $border-color;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  box-shadow: $shadow-xl;
-  animation: toastSlideIn 0.3s ease-out;
-  position: relative;
-  
-  &.toast-success {
-    border-left: 4px solid $success-color;
-    
-    .secure-toast-icon {
-      color: $success-color;
-    }
-  }
-  
-  &.toast-warning {
-    border-left: 4px solid $warning-color;
-    
-    .secure-toast-icon {
-      color: $warning-color;
-    }
-  }
-  
-  &.toast-error {
-    border-left: 4px solid $error-color;
-    
-    .secure-toast-icon {
-      color: $error-color;
-    }
-  }
-  
-  .secure-toast-content {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    
-    .secure-toast-icon {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-    }
-    
-    .secure-toast-text {
-      font-weight: 500;
-      color: $text-primary;
-      font-size: 0.875rem;
-    }
-  }
-}
-
 // Additional animations
 @keyframes warningPulse {
   0%, 100% {
@@ -1378,31 +1447,6 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
   }
   50% {
     box-shadow: 0 0 0 10px rgba($error-color, 0);
-  }
-}
-
-@keyframes progressShimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-@keyframes securityPulse {
-  0%, 100% {
-    box-shadow: $shadow-xl, 0 0 0 0 rgba($success-color, 0.4);
-  }
-  50% {
-    box-shadow: $shadow-xl, 0 0 0 15px rgba($success-color, 0);
-  }
-}
-
-@keyframes toastSlideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
   }
 }
 
@@ -1465,223 +1509,72 @@ $gradient-error: linear-gradient(135deg, $error-color 0%, $error-light 100%);
   }
 }
 
-// Professional typography
-.secure-typography-h1 {
-  font-size: 2.25rem;
-  font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
-}
-
-.secure-typography-h2 {
-  font-size: 1.875rem;
-  font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: -0.025em;
-}
-
-.secure-typography-h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-.secure-typography-body {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: $text-secondary;
-}
-
-.secure-typography-small {
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: $text-muted;
-}
-
-// Security monitoring indicators
-.secure-monitoring-panel {
-  position: fixed;
-  bottom: 2rem;
-  left: 2rem;
-  background: rgba($bg-primary, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid $border-color;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: $shadow-lg;
-  z-index: 10001;
-  
-  .secure-monitoring-title {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: $text-muted;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.75rem;
+// MOBILE FIX: Ensure button visibility on all mobile devices
+@media (max-width: 768px) {
+  .secure-start-exam-btn {
+    // Force visibility
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    // Ensure it's above other content
+    z-index: 1001 !important;
+    // Add stronger shadow for visibility
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2), $shadow-xl !important;
+    // Ensure background color is applied
+    background: $gradient-success !important;
+    
+    &:disabled {
+      background: $text-light !important;
+      color: $text-white !important;
+      opacity: 0.7 !important;
+    }
   }
-  
-  .secure-monitoring-items {
+}
+
+// Emergency mobile viewport fix
+@media (max-height: 600px) and (max-width: 768px) {
+  .secure-verification-instructions {
+    min-height: auto;
+    height: auto;
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: 0.5rem;
+  }
+
+  .secure-instructions-content {
+    margin-top: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    justify-content: space-between;
+    min-height: 100%;
   }
-  
-  .secure-monitoring-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    
-    .secure-monitoring-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      
-      &.dot-active {
-        background: $success-color;
-        animation: pulse 2s ease-in-out infinite;
-      }
-      
-      &.dot-inactive {
-        background: $text-light;
-      }
-      
-      &.dot-error {
-        background: $error-color;
-        animation: warningBlink 1s ease-in-out infinite;
-      }
-    }
-  }
-}
 
-// Professional scrollbar styling
-.secure-scroll-container {
-  &::-webkit-scrollbar {
-    width: 8px;
+  .secure-instructions-icon {
+    margin-bottom: 0.5rem;
   }
-  
-  &::-webkit-scrollbar-track {
-    background: $bg-tertiary;
-    border-radius: 4px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: $text-light;
-    border-radius: 4px;
-    
-    &:hover {
-      background: $text-muted;
-    }
-  }
-}
 
-// Additional warning animations
-@keyframes warningBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
+  .secure-instructions-title {
+    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+  }
 
-// Glass morphism effects for modern look
-.secure-glass-effect {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
+  .secure-instructions-list {
+    margin-bottom: 0.75rem;
+    flex-shrink: 0;
+  }
 
-// Professional card hover effects
-.secure-card-hover-effect {
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.5s ease;
+  .secure-exam-details {
+    margin: 0.75rem 0;
+    flex-shrink: 0;
   }
-  
-  &:hover::before {
-    left: 100%;
-  }
-}
 
-// Enhanced button states
-.secure-button-primary {
-  @extend %secure-button-base;
-  background: $gradient-primary;
-  color: $text-white;
-  border: 2px solid transparent;
-  
-  &:not(:disabled):hover {
-    background: linear-gradient(135deg, $primary-dark, $primary-color);
-  }
-}
-
-.secure-button-secondary {
-  @extend %secure-button-base;
-  background: $bg-primary;
-  color: $text-secondary;
-  border: 2px solid $border-color;
-  
-  &:not(:disabled):hover {
-    background: $bg-tertiary;
-    border-color: $primary-color;
-    color: $text-primary;
-  }
-}
-
-.secure-button-success {
-  @extend %secure-button-base;
-  background: $gradient-success;
-  color: $text-white;
-  border: 2px solid transparent;
-  
-  &:not(:disabled):hover {
-    background: linear-gradient(135deg, #047857, $success-color);
-  }
-}
-
-.secure-button-danger {
-  @extend %secure-button-base;
-  background: $gradient-error;
-  color: $text-white;
-  border: 2px solid transparent;
-  
-  &:not(:disabled):hover {
-    background: linear-gradient(135deg, #b91c1c, $error-color);
-  }
-}
-
-// Responsive enhancements for tablets
-@media (max-width: 1200px) and (min-width: 769px) {
-  .secure-verification-main {
-    grid-template-columns: 350px 1fr;
-  }
-  
-  .secure-agreement-header {
-    .secure-agreement-header-content {
-      flex-direction: column;
-      text-align: center;
-      gap: 1rem;
-    }
-    
-    .secure-agreement-title-section {
-      text-align: center;
-    }
-  }
-}
-
-// Ultra-wide screen optimizations
-@media (min-width: 1400px) {
-  .secure-agreement-container {
-    max-width: 800px;
-  }
-  
-  .secure-verification-main {
-    grid-template-columns: 450px 1fr;
+  .secure-start-exam-btn {
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+    flex-shrink: 0;
+    position: relative;
+    bottom: auto;
   }
 }
